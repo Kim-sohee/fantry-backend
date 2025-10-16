@@ -6,9 +6,12 @@ public class SecurityConstants {
     public static final String[] PUBLIC_URIS = {
             "/actuator/**",
             "/api/login",
+            "/login/**",
             "/api/reissue",
             "/api/user/**",
             "/api/admin/signup",
+            "/oauth2/**",           // OAuth2 로그인 시작 URL
+            "/login/oauth2/**",     // OAuth2 로그인 콜백 URL
             "/api/send/**",
             "/app/**",
             "/api/auctions/**",

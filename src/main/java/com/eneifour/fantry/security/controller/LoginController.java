@@ -14,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -59,5 +56,11 @@ public class LoginController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         logoutService.logout(request, response);
         return ResponseEntity.ok(Map.of("result", "로그아웃 성공"));
+    }
+
+    //sns 로그인
+    @GetMapping("/login/sns")
+    public String loginSns() {
+        return "로그인 성공";
     }
 }

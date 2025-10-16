@@ -38,7 +38,11 @@ public enum AuthErrorCode {
     AUTH_EMAIL_MISMATCH(HttpStatus.BAD_REQUEST, "T402", "이메일이 일치하지 않습니다."),
     AUTH_NOT_LOGIN_REQUEST(HttpStatus.BAD_REQUEST, "T403", "로그인 요청이 아닙니다."),
     AUTH_VERSION_MISMATCH(HttpStatus.BAD_REQUEST, "T404", "버전이 일치하지 않습니다."),
-    AUTH_UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "T499", "인증 에러가 발생했습니다. (기타 예외)");
+    AUTH_UNEXPECTED_ERROR(HttpStatus.UNAUTHORIZED, "T499", "인증 에러가 발생했습니다. (기타 예외)"),
+
+    // 6. OAuth 인증 과정 오류
+    OAUTH_AUTH_FAIL(HttpStatus.UNAUTHORIZED, "T501", "OAuth2 인증 오류가 발생하였습니다."),
+    OAUTH_UNSUPPORTED_PROVIDER(HttpStatus.UNAUTHORIZED, "T502", "OAuth2 지원하지 않는 SNS 로그인 유형입니다.");
 
     private final HttpStatus status;
     private final String code;

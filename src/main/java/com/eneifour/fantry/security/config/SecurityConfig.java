@@ -2,7 +2,11 @@ package com.eneifour.fantry.security.config;
 
 import com.eneifour.fantry.common.config.CorsProperties;
 import com.eneifour.fantry.security.filter.AuthJwtTokenFilter;
+import com.eneifour.fantry.security.oauth.OAuthFailureHandler;
+import com.eneifour.fantry.security.oauth.OAuthSuccessHandler;
+import com.eneifour.fantry.security.service.CustomOAuth2UserService;
 import com.eneifour.fantry.security.service.CustomUserDetailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,13 +15,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,15 +33,17 @@ import java.util.Collections;
  */
 @Configuration
 @EnableWebSecurity // 스프링 시큐리티의 웹 보안 설정을 활성화합니다.
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CorsProperties corsProperties;
     private final AuthJwtTokenFilter authJwtTokenFilter;
 
-    public SecurityConfig(CorsProperties corsProperties,  AuthJwtTokenFilter authJwtTokenFilter) {
-        this.corsProperties = corsProperties;
-        this.authJwtTokenFilter = authJwtTokenFilter;
-    }
+    //OAuth
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+    private final OAuthFailureHandler oAuthFailureHandler;
+
 
     //암호화 설정
     @Bean
@@ -84,10 +86,17 @@ public class SecurityConfig {
                 )
                 .formLogin(auth -> auth.disable())
                 .httpBasic(auth -> auth.disable())
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(ui -> ui.userService(customOAuth2UserService))
+                        .defaultSuccessUrl("http://localhost:5173/")
+                        .successHandler(oAuthSuccessHandler)
+                        .failureHandler(oAuthFailureHandler)
+                )
+
                 .logout(logout -> logout.disable())
 
                 //필터등록
-                .addFilterBefore(authJwtTokenFilter, AuthenticationFilter.class)
+                .addFilterBefore(authJwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
 
                 //세션 설정
                 .sessionManagement(session ->
